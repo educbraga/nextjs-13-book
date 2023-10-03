@@ -1,30 +1,30 @@
-"use client";
-
 import Link from "next/link";
-
-async function fetchPosts() {
-  const url =
-    "https://raw.githubusercontent.com/neodtruman/nextjs-blog/Chapter.10.4/public/posts.json";
-  const response = await fetch(url, { cache: "no-store" });
-  const data = await response.json();
-  return data.posts;
+import path from "path";
+import fs from "fs";
+export const revalidate = 30;
+function fetchPosts() {
+  const filePath = path.join(process.cwd(), "data", "posts.json");
+  const jsonData = fs.readFileSync(filePath);
+  const data = JSON.parse(jsonData);
+  return data;
 }
-
-export default async function AllPostsPage() {
+export default function AllPostsPage() {
   const lastRenderedTime = new Date().toLocaleTimeString();
-  const posts = await fetchPosts();
+  const posts = fetchPosts();
   return (
     <>
-      <h1>All Posts</h1>
-      <p>Last rendered time: {lastRenderedTime}</p>
+      {" "}
+      <h1>All Posts</h1> <p>Last rendered time: {lastRenderedTime}</p>{" "}
       <ul>
+        {" "}
         {posts &&
           posts.map((post) => (
-            <li key={post.id}>
-              <Link href={`/posts/${post.id}`}>{post.title}</Link>
+            <li key={post.slug}>
+              {" "}
+              <Link href={`/posts/${post.slug}`}>{post.title}</Link>{" "}
             </li>
-          ))}
-      </ul>
+          ))}{" "}
+      </ul>{" "}
     </>
   );
 }
